@@ -1,110 +1,155 @@
 {\rtf1\ansi\ansicpg1252\cocoartf2578
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 TimesNewRomanPSMT;\f1\froman\fcharset0 TimesNewRomanPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red5\green99\blue193;}
 {\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\csgenericrgb\c1961\c38824\c75686;}
 {\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid1\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
 {\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
-\margl1440\margr1440\vieww25400\viewh13400\viewkind0
+\margl1440\margr1440\vieww18580\viewh9320\viewkind0
 \deftab720
 \pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\fs22 \cf2 1.	Show all customers whose last names start with T. Order them by first name from A-Z.\
-SELECT first_name,last_name\
-FROM customer\
-WHERE last_name LIKE 'T%'\
-ORDER BY first_name;\
+\f0\fs22 \cf2 \
+1.	Show all customers whose last names start with T. Order them by first name from A-Z.\
+\ls1\ilvl0
+\f1\b SELECT first_name,last_name  --select the first and last names\
+FROM customer --obtain it from customer table\
+WHERE last_name LIKE 'T%' --match all last names that start with t\
+ORDER BY first_name; --put in order of first name, ascending automatic\
+ 
+\f0\b0 \
 2.	Show all rentals returned from 5/28/2005 to 6/1/2005\
-SELECT rental_id\
-FROM rental\
-WHERE rental_date BETWEEN '2005-5-28' AND '2005-6-1';\
-3.	How would you determine which movies are rented the most?\
-SELECT title, COUNT(rental_id)\
+\ls1\ilvl0
+\f1\b SELECT rental_id --select rental_id\
+FROM rental --from rental table\
+WHERE rental_date BETWEEN '2005-5-28' AND '2005-6-1'; --between two dates, inclusive\
+\
+\ls1\ilvl0
+\f0\b0 3.	How would you determine which movies are rented the most?\
+\ls1\ilvl0
+\f1\b SELECT title, COUNT(rental_id) -- select title of film, and how many times the film as been rented\
 FROM rental\
 JOIN inventory\
-ON rental.inventory_id = inventory.inventory_id\
+ON rental.inventory_id = inventory.inventory_id --because rental and film table aren't connected, using inventory to get info from both tables\
 JOIN film\
-ON inventory.film_id = film.film_id\
-GROUP BY film.title\
-ORDER BY COUNT(rental_id) DESC;\
+ON inventory.film_id = film.film_id --get info from film table from rental table\
+GROUP BY film.title --group results by movie title\
+ORDER BY COUNT(rental_id) DESC; --order results by number of times movie has been rented\
+\ls1\ilvl0
+\f0\b0 \
 4.	Show how much each customer spent on movies (for all time) . Order them from least to most.\
-SELECT first_name, last_name, SUM(amount) AS total_spent\
+\ls1\ilvl0
+\f1\b SELECT first_name, last_name, SUM(amount) AS total_spent --get first name/last name of customer, alias total amount\
+FROM customer\
+JOIN payment\
+ON customer.customer_id = payment.customer_id --get customer id and payment from multiple tables\
+GROUP BY first_name,last_name --group by name\
+ORDER BY SUM(amount) DESC; -- in descending order\
+\ls1\ilvl0
+\f0\b0 \
+5.	Which actor was in the most movies in 2006 (based on this dataset)? Be sure to alias the actor name and count as a more descriptive name. Order the results from most to least.\
+\ls1\ilvl0
+\f1\b SELECT CONCAT(first_name,' ',last_name) AS actor_name, COUNT(film.film_id) as Movie_appearances --aliasing actor's name and number of film apperances\
+FROM actor\
+JOIN film_actor\
+ON actor.actor_id = film_actor.actor_id --get info from actor and film  tables\
+JOIN film\
+ON film.film_id = film_actor.film_id --get info from film and each film the actor has been in\
+WHERE release_year = 2006 --restrict data from movie release year\
+GROUP BY actor_name --group by actor's name\
+ORDER BY COUNT(film.film_id) DESC; --order number of film apperances in descending order\
+\ls1\ilvl0
+\f0\b0 \
+6.	Write an explain plan for 4 and 5. Show the queries and explain what is happening in each one. Use the following link to understand how this works {\field{\*\fldinst{HYPERLINK "http://postgresguide.com/performance/explain.html"}}{\fldrslt \ul \ulc3 http://postgresguide.com/performance/explain.html}} \
+6a. \
+\ls1\ilvl0
+\f1\b EXPLAIN ANALYZE SELECT first_name, last_name, SUM(amount) AS total_spent\
 FROM customer\
 JOIN payment\
 ON customer.customer_id = payment.customer_id\
 GROUP BY first_name,last_name\
 ORDER BY SUM(amount);\
-5.	Which actor was in the most movies in 2006 (based on this dataset)? Be sure to alias the actor name and count as a more descriptive name. Order the results from most to least.\
-SELECT first_name,last_name, COUNT(film.film_id) as Movie_appearances\
-FROM actor\
-JOIN film_actor\
-ON actor.actor_id = film_actor.actor_id\
-JOIN film\
-ON film.film_id = film_actor.film_id\
-WHERE release_year = 2006\
-GROUP BY first_name,last_name\
-ORDER BY COUNT(film.film_id) DESC;\
-6.	Write an explain plan for 4 and 5. Show the queries and explain what is happening in each one. Use the following link to understand how this works {\field{\*\fldinst{HYPERLINK "http://postgresguide.com/performance/explain.html"}}{\fldrslt \ul \ulc3 http://postgresguide.com/performance/explain.html}} \
-EXPLAIN ANALYZE SELECT first_name,last_name, COUNT(film.film_id) as Movie_appearances\
-FROM actor\
-JOIN film_actor\
-ON actor.actor_id = film_actor.actor_id\
-JOIN film\
-ON film.film_id = film_actor.film_id\
-WHERE release_year = 2006\
-GROUP BY first_name,last_name\
-ORDER BY COUNT(film.film_id) DESC;\
 \
-"Sort  (cost=245.88..246.20 rows=128 width=21) (actual time=32.165..32.207 rows=199 loops=1)"\
+"Sort  (cost=459.61..461.11 rows=599 width=45)"\
+"  Sort Key: (sum(payment.amount))"\
+"  ->  HashAggregate  (cost=424.49..431.98 rows=599 width=45)"\
+"        Group Key: customer.first_name, customer.last_name"\
+"        ->  Hash Join  (cost=22.48..315.02 rows=14596 width=19)"\
+"              Hash Cond: (payment.customer_id = customer.customer_id)"\
+"              ->  Seq Scan on payment  (cost=0.00..253.96 rows=14596 width=8)"\
+"              ->  Hash  (cost=14.99..14.99 rows=599 width=17)"\
+"                    ->  Seq Scan on customer  (cost=0.00..14.99 rows=599 width=17)"
+\f0\b0 \
+\
+6b.\
+\ls1\ilvl0
+\f1\b EXPLAIN SELECT first_name,last_name, COUNT(film.film_id) as Movie_appearances\
+FROM actor\
+JOIN film_actor\
+ON actor.actor_id = film_actor.actor_id\
+JOIN film\
+ON film.film_id = film_actor.film_id\
+WHERE release_year = 2006\
+GROUP BY first_name,last_name\
+ORDER BY COUNT(film.film_id) DESC;
+\f0\b0 \
+\
+\ls1\ilvl0
+\f1\b "Sort  (cost=245.88..246.20 rows=128 width=21)"\
 "  Sort Key: (count(film.film_id)) DESC"\
-"  Sort Method: quicksort  Memory: 40kB"\
-"  ->  HashAggregate  (cost=240.12..241.40 rows=128 width=21) (actual time=31.092..31.174 rows=199 loops=1)"\
+"  ->  HashAggregate  (cost=240.12..241.40 rows=128 width=21)"\
 "        Group Key: actor.first_name, actor.last_name"\
-"        Batches: 1  Memory Usage: 64kB"\
-"        ->  Hash Join  (cost=85.50..199.15 rows=5462 width=17) (actual time=4.791..21.863 rows=5462 loops=1)"\
+"        ->  Hash Join  (cost=85.50..199.15 rows=5462 width=17)"\
 "              Hash Cond: (film_actor.film_id = film.film_id)"\
-"              ->  Hash Join  (cost=6.50..105.76 rows=5462 width=15) (actual time=4.269..15.309 rows=5462 loops=1)"\
+"              ->  Hash Join  (cost=6.50..105.76 rows=5462 width=15)"\
 "                    Hash Cond: (film_actor.actor_id = actor.actor_id)"\
-"                    ->  Seq Scan on film_actor  (cost=0.00..84.62 rows=5462 width=4) (actual time=0.030..0.976 rows=5462 loops=1)"\
-"                    ->  Hash  (cost=4.00..4.00 rows=200 width=17) (actual time=0.153..0.154 rows=200 loops=1)"\
-"                          Buckets: 1024  Batches: 1  Memory Usage: 18kB"\
-"                          ->  Seq Scan on actor  (cost=0.00..4.00 rows=200 width=17) (actual time=0.029..0.080 rows=200 loops=1)"\
-"              ->  Hash  (cost=66.50..66.50 rows=1000 width=4) (actual time=0.485..0.486 rows=1000 loops=1)"\
-"                    Buckets: 1024  Batches: 1  Memory Usage: 44kB"\
-"                    ->  Seq Scan on film  (cost=0.00..66.50 rows=1000 width=4) (actual time=0.014..0.297 rows=1000 loops=1)"\
-"                          Filter: ((release_year)::integer = 2006)"\
-"Planning Time: 2.291 ms"\
-"Execution Time: 32.477 ms"\
+"                    ->  Seq Scan on film_actor  (cost=0.00..84.62 rows=5462 width=4)"\
+"                    ->  Hash  (cost=4.00..4.00 rows=200 width=17)"\
+"                          ->  Seq Scan on actor  (cost=0.00..4.00 rows=200 width=17)"\
+"              ->  Hash  (cost=66.50..66.50 rows=1000 width=4)"\
+"                    ->  Seq Scan on film  (cost=0.00..66.50 rows=1000 width=4)"\
+"                          Filter: ((release_year)::integer = 2006)"
+\f0\b0 \
 \
 7.	What is the average rental rate per genre?\
-SELECT name, AVG(rental_rate) AS avg_rental_rate\
+\
+\ls1\ilvl0
+\f1\b SELECT name, AVG(rental_rate) AS avg_rental_rate --select name and alias average rental rate\
 FROM film\
 JOIN film_category\
-ON film.film_id = film_category.film_id\
+ON film.film_id = film_category.film_id -- join film and film_category table to get rental rate\
 JOIN category\
-ON film_category.category_id=category.category_id\
-GROUP BY name;\
+ON film_category.category_id=category.category_id --join category and film_category to get category name\
+GROUP BY name; --group by category name\
+\ls1\ilvl0
+\f0\b0 \
 8.	How many films were returned late? Early? On time?\
-CREATE VIEW Rental_Returns AS \
+\
+\ls1\ilvl0
+\f1\b CREATE VIEW Rental_Returns AS --create view table\
 	SELECT  \
-		COUNT(film.film_id) AS Num_of_Films,\
+		COUNT(film.film_id) AS Num_of_Films, --alias the count of number of films\
 		CASE\
 			WHEN DATE_PART('day', return_date - rental_date) < rental_duration THEN 'Returned Early'\
 			WHEN DATE_Part('day', return_date - rental_date) = rental_duration THEN 'Returned on Time'\
-			ELSE 'Returned Late'\
-		END AS Status\
+			ELSE 'Returned Late' --create criteria to see when a film is returned, based on rental duration and the difference in days of when the film was returned\
+		END AS Status --alias as Status\
 	FROM film\
 	JOIN inventory\
-	ON film.film_id=inventory.film_id\
+	ON film.film_id=inventory.film_id --join film and inventory table\
 	JOIN rental\
-	ON inventory.inventory_id = rental.inventory_id\
-	GROUP BY Status;\
-\
+	ON inventory.inventory_id = rental.inventory_id --join rental and inventory table\
+	GROUP BY Status; --group by return Status\
+\ls1\ilvl0
+\f0\b0 \
 7738	"Returned Early"\
 1720	"Returned on Time"\
 6586	"Returned Late"\
+\
 9.	What categories are the most rented and what are their total sales?\
-CREATE VIEW total_sales_by_cat AS\
-SELECT name, SUM(amount)\
+\
+\ls1\ilvl0
+\f1\b CREATE VIEW total_sales_by_cat AS --create view table as\
+SELECT name, SUM(amount) --get name and sum of amount\
 FROM category\
 JOIN film_category\
 ON category.category_id = film_category.category_id\
@@ -113,18 +158,37 @@ ON film_category.film_id = inventory.film_id\
 JOIN rental\
 ON inventory.inventory_id =  rental.inventory_id\
 JOIN payment\
-ON rental.rental_id = payment.rental_id\
-GROUP BY name;\
-10.	Create a view for 8 and a view for 9. Be sure to name them appropriately. \
-View for 8 (Rental_Returns):\
+ON rental.rental_id = payment.rental_id --join tables to get category name info and amount of sales\
+GROUP BY name; --group by name\
+\
+\ls1\ilvl0
+\f0\b0 10.	Create a view for 8 and a view for 9. Be sure to name them appropriately. \
+10a. 
+\f1\b \
 SELECT *\
 FROM Rental_Returns\
-\
-View for 9():\
-SELECT *\
-FROM total_sales_by_cat;\
+\ls1\ilvl0
+\f0\b0 \
+10b.\
+\ls1\ilvl0
+\f1\b SELECT *\
+FROM total_sales_by_cat;
+\f0\b0 \
 \
 Bonus:\
 \pard\pardeftab720\ri0\sl259\slmult1\sa160\partightenfactor0
 \cf2 Write a query that shows how many films were rented each month. Group them by category and month. \
+\
+
+\f1\b SELECT name, EXTRACT(month FROM rental.rental_date) AS rental_month, COUNT(film_category.film_id)\
+FROM category\
+JOIN film_category\
+ON category.category_id = film_category.category_id \
+JOIN inventory\
+ON film_category.film_id = inventory.film_id\
+JOIN rental\
+ON inventory.inventory_id = rental.inventory_id\
+GROUP BY name, rental_month\
+ORDER BY rental_month;
+\f0\b0 \
 }
