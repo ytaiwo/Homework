@@ -10,8 +10,9 @@
 \ls1\ilvl0
 \f0\fs22 \cf2 \
 1.	Show all customers whose last names start with T. Order them by first name from A-Z.\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b SELECT first_name,last_name  --select the first and last names\
+\f1\b \cf2 SELECT first_name,last_name  --select the first and last names\
 FROM customer --obtain it from customer table\
 WHERE last_name LIKE 'T%' --match all last names that start with t\
 ORDER BY first_name; --put in order of first name, ascending automatic\
@@ -19,14 +20,16 @@ ORDER BY first_name; --put in order of first name, ascending automatic\
 \f0\b0 \
 2.	Show all rentals returned from 5/28/2005 to 6/1/2005\
 \ls1\ilvl0
-\f1\b SELECT rental_id --select rental_id\
+\f1\b SELECT * --select all\
 FROM rental --from rental table\
 WHERE rental_date BETWEEN '2005-5-28' AND '2005-6-1'; --between two dates, inclusive\
 \
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 3.	How would you determine which movies are rented the most?\
+\f0\b0 \cf2 3.	How would you determine which movies are rented the most?\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b SELECT title, COUNT(rental_id) -- select title of film, and how many times the film as been rented\
+\f1\b \cf2 SELECT title, COUNT(rental_id) -- select title of film, and how many times the film as been rented\
 FROM rental\
 JOIN inventory\
 ON rental.inventory_id = inventory.inventory_id --because rental and film table aren't connected, using inventory to get info from both tables\
@@ -34,21 +37,25 @@ JOIN film\
 ON inventory.film_id = film.film_id --get info from film table from rental table\
 GROUP BY film.title --group results by movie title\
 ORDER BY COUNT(rental_id) DESC; --order results by number of times movie has been rented\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 \
+\f0\b0 \cf2 \
 4.	Show how much each customer spent on movies (for all time) . Order them from least to most.\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b SELECT first_name, last_name, SUM(amount) AS total_spent --get first name/last name of customer, alias total amount\
+\f1\b \cf2 SELECT first_name, last_name, SUM(amount) AS total_spent --get first name/last name of customer, alias total amount\
 FROM customer\
 JOIN payment\
 ON customer.customer_id = payment.customer_id --get customer id and payment from multiple tables\
 GROUP BY first_name,last_name --group by name\
 ORDER BY SUM(amount) DESC; -- in descending order\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 \
+\f0\b0 \cf2 \
 5.	Which actor was in the most movies in 2006 (based on this dataset)? Be sure to alias the actor name and count as a more descriptive name. Order the results from most to least.\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b SELECT CONCAT(first_name,' ',last_name) AS actor_name, COUNT(film.film_id) as Movie_appearances --aliasing actor's name and number of film apperances\
+\f1\b \cf2 SELECT CONCAT(first_name,' ',last_name) AS actor_name, COUNT(film.film_id) as Movie_appearances --aliasing actor's name and number of film apperances\
 FROM actor\
 JOIN film_actor\
 ON actor.actor_id = film_actor.actor_id --get info from actor and film  tables\
@@ -57,12 +64,14 @@ ON film.film_id = film_actor.film_id --get info from film and each film the acto
 WHERE release_year = 2006 --restrict data from movie release year\
 GROUP BY actor_name --group by actor's name\
 ORDER BY COUNT(film.film_id) DESC; --order number of film apperances in descending order\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 \
+\f0\b0 \cf2 \
 6.	Write an explain plan for 4 and 5. Show the queries and explain what is happening in each one. Use the following link to understand how this works {\field{\*\fldinst{HYPERLINK "http://postgresguide.com/performance/explain.html"}}{\fldrslt \ul \ulc3 http://postgresguide.com/performance/explain.html}} \
 6a. \
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b EXPLAIN ANALYZE SELECT first_name, last_name, SUM(amount) AS total_spent\
+\f1\b \cf2 EXPLAIN ANALYZE SELECT first_name, last_name, SUM(amount) AS total_spent\
 FROM customer\
 JOIN payment\
 ON customer.customer_id = payment.customer_id\
@@ -120,12 +129,14 @@ ON film.film_id = film_category.film_id -- join film and film_category table to 
 JOIN category\
 ON film_category.category_id=category.category_id --join category and film_category to get category name\
 GROUP BY name; --group by category name\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 \
+\f0\b0 \cf2 \
 8.	How many films were returned late? Early? On time?\
 \
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b CREATE VIEW Rental_Returns AS --create view table\
+\f1\b \cf2 CREATE VIEW Rental_Returns AS --create view table\
 	SELECT  \
 		COUNT(film.film_id) AS Num_of_Films, --alias the count of number of films\
 		CASE\
@@ -139,16 +150,18 @@ GROUP BY name; --group by category name\
 	JOIN rental\
 	ON inventory.inventory_id = rental.inventory_id --join rental and inventory table\
 	GROUP BY Status; --group by return Status\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 \
+\f0\b0 \cf2 \
 7738	"Returned Early"\
 1720	"Returned on Time"\
 6586	"Returned Late"\
 \
 9.	What categories are the most rented and what are their total sales?\
 \
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b CREATE VIEW total_sales_by_cat AS --create view table as\
+\f1\b \cf2 CREATE VIEW total_sales_by_cat AS --create view table as\
 SELECT name, SUM(amount) --get name and sum of amount\
 FROM category\
 JOIN film_category\
@@ -161,8 +174,9 @@ JOIN payment\
 ON rental.rental_id = payment.rental_id --join tables to get category name info and amount of sales\
 GROUP BY name; --group by name\
 \
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f0\b0 10.	Create a view for 8 and a view for 9. Be sure to name them appropriately. \
+\f0\b0 \cf2 10.	Create a view for 8 and a view for 9. Be sure to name them appropriately. \
 10a. 
 \f1\b \
 SELECT *\
@@ -170,8 +184,9 @@ FROM Rental_Returns\
 \ls1\ilvl0
 \f0\b0 \
 10b.\
+\pard\tx720\pardeftab720\li720\fi-360\ri0\sl259\slmult1\sa160\partightenfactor0
 \ls1\ilvl0
-\f1\b SELECT *\
+\f1\b \cf2 SELECT *\
 FROM total_sales_by_cat;
 \f0\b0 \
 \
