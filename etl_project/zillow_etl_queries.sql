@@ -46,3 +46,4 @@ inner join zdata as z
 on z.zind_id = r.region_num --join tables on zillow indicator value and region number
 group by r.state --group by state
 order by sum DESC --order it in descending form
+
